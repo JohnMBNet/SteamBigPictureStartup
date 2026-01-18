@@ -6,7 +6,7 @@
 
 [![Windows](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D6?style=for-the-badge&logo=windows)](https://www.microsoft.com/windows)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.2.0-blue?style=for-the-badge)]()
+[![Version](https://img.shields.io/badge/Version-1.3.0-blue?style=for-the-badge)]()
 
 <br>
 
@@ -59,7 +59,7 @@
 <tr>
 <td>
 
-**1.** Navigate to the `install` folder
+**1.** Download or clone this repository
 
 **2.** Run **`SteamBigPictureSetup.exe`**
 
@@ -73,7 +73,7 @@
 ```
 ┌───────────────────────────────────────────────┐
 │     Steam Big Picture Startup Setup           │
-│                  v1.2.0                       │
+│                  v1.3.0                       │
 ├───────────────────────────────────────────────┤
 │                                               │
 │  Status: NOT INSTALLED                        │
@@ -96,20 +96,20 @@
 
 ```powershell
 # Silent install
-install\SteamBigPictureSetup.exe --install
+.\SteamBigPictureSetup.exe --install
 
 # Silent uninstall
-install\SteamBigPictureSetup.exe --uninstall
+.\SteamBigPictureSetup.exe --uninstall
 ```
 
 ### Alternative: PowerShell Script
 
 ```powershell
 # Install
-.\setup.ps1
+.\src\setup.ps1
 
 # Uninstall
-.\setup.ps1 -Uninstall
+.\src\setup.ps1 -Uninstall
 ```
 
 <br>
@@ -201,10 +201,11 @@ Yes! Run the installer for each Windows user account that needs Big Picture mode
 **Requirements:** [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ```powershell
+cd src
 .\build.ps1
 ```
 
-Output: `publish\SteamBigPictureSetup.exe`
+Output: `SteamBigPictureSetup.exe` (copied to root)
 
 <br>
 
@@ -213,22 +214,22 @@ Output: `publish\SteamBigPictureSetup.exe`
 ```
 SteamBigPictureStartup/
 │
-├── 📂 install/
-│   └── SteamBigPictureSetup.exe    ← Ready-to-use installer
+├── 🎮 SteamBigPictureSetup.exe     ← Run this to install
 │
-├── 📂 releases/
+├── 📂 src/
+│   ├── 📂 SteamBigPictureInstaller/
+│   │   ├── Program.cs              ← Installer source
+│   │   └── *.csproj                ← Project file
+│   ├── StartSteamBigPicture.ps1    ← Standalone script
+│   ├── setup.ps1                   ← PowerShell installer
+│   └── build.ps1                   ← Build script
+│
+├── 📂 docs/
 │   └── *.md                        ← Release notes
 │
-├── 📂 SteamBigPictureInstaller/
-│   ├── Program.cs                  ← Installer source
-│   └── *.csproj                    ← Project file
-│
-├── 📄 StartSteamBigPicture.ps1     ← Standalone script
-├── 📄 setup.ps1                    ← PowerShell installer
-├── 📄 build.ps1                    ← Build script
+├── 📄 README.md                    ← You are here
 ├── 📄 CHANGELOG.md                 ← Version history
-├── 📄 LICENSE                      ← MIT License
-└── 📄 README.md                    ← You are here
+└── 📄 LICENSE                      ← MIT License
 ```
 
 <br>

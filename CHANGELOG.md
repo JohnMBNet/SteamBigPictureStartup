@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-01-18
+
+### Added
+- Stunning new README with badges, feature tables, and visual elements
+- Collapsible FAQ section in documentation
+- Flow diagram showing startup process
+- ASCII preview of installer UI in README
+
+### Changed
+- **Project structure completely reorganized:**
+  - Installer exe moved to project root for easy access
+  - Source files consolidated in `src/` directory
+  - Release notes moved to `docs/` directory
+- Build script now outputs exe directly to project root
+- Build process automatically cleans up temporary files
+- Improved documentation throughout
+
 ## [1.2.0] - 2026-01-18
 
 ### Added
@@ -25,7 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Reorganized project structure
-- Release notes moved to `releases/` folder
+- Release notes moved to dedicated folder
 
 ## [1.0.0] - 2026-01-18
 

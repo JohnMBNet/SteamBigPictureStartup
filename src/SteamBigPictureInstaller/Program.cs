@@ -9,7 +9,7 @@ namespace SteamBigPictureInstaller;
 class Program
 {
     private const string AppName = "Steam Big Picture Startup";
-    private const string AppVersion = "1.2.0";
+    private const string AppVersion = "1.3.0";
     private const string ShortcutName = "Steam Big Picture.lnk";
     private const string ScriptFileName = "StartSteamBigPicture.ps1";
     private const string SteamRunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";

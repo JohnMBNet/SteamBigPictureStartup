@@ -2,6 +2,8 @@
 bin/
 obj/
 publish/
+src/SteamBigPictureInstaller/bin/
+src/SteamBigPictureInstaller/obj/
 
 # IDE
 .vs/
