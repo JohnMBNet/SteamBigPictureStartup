@@ -15,3 +15,6 @@ Thumbs.db
 
 # Debug files
 *.pdb
+
+# Runtime files
+.steam_startup_backup

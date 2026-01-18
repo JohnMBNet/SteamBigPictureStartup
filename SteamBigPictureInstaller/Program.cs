@@ -2,14 +2,19 @@
 // Copyright (c) 2026 JohnMBNet
 // Licensed under the MIT License
 
+using Microsoft.Win32;
+
 namespace SteamBigPictureInstaller;
 
 class Program
 {
     private const string AppName = "Steam Big Picture Startup";
-    private const string AppVersion = "1.1.0";
+    private const string AppVersion = "1.2.0";
     private const string ShortcutName = "Steam Big Picture.lnk";
     private const string ScriptFileName = "StartSteamBigPicture.ps1";
+    private const string SteamRunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
+    private const string SteamRunValueName = "Steam";
+    private const string BackupFileName = "steam_startup_backup.txt";
 
     private static readonly string StartupFolder = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
     private static readonly string InstallFolder = Path.Combine(
@@ -20,7 +25,6 @@ class Program
     {
         Console.Title = AppName + " Setup";
 
-        // Handle command line arguments for silent install/uninstall
         if (args.Length > 0)
         {
             switch (args[0].ToLower())
@@ -38,7 +42,6 @@ class Program
             }
         }
 
-        // Interactive mode
         ShowMenu();
     }
 
@@ -50,6 +53,7 @@ class Program
             PrintHeader();
 
             bool isInstalled = IsInstalled();
+            bool steamStartupEnabled = IsSteamStartupEnabled();
 
             Console.WriteLine();
             if (isInstalled)
@@ -62,6 +66,13 @@ class Program
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("  Status: NOT INSTALLED");
+                Console.ResetColor();
+            }
+
+            if (steamStartupEnabled && !isInstalled)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                Console.WriteLine("  Note:   Steam's default startup is enabled (will be disabled on install)");
                 Console.ResetColor();
             }
 
@@ -96,8 +107,8 @@ class Program
         Console.ForegroundColor = ConsoleColor.Cyan;
         Console.WriteLine($@"
   ╔═══════════════════════════════════════════════════════╗
-  ║         Steam Big Picture Startup Setup               ║
-  ║                     v{AppVersion}                            ║
+  ║       Steam Big Picture Startup Setup                 ║
+  ║                    v{AppVersion}                            ║
   ╚═══════════════════════════════════════════════════════╝");
         Console.ResetColor();
     }
@@ -106,6 +117,89 @@ class Program
     {
         string shortcutPath = Path.Combine(StartupFolder, ShortcutName);
         return File.Exists(shortcutPath);
+    }
+
+    static bool IsSteamStartupEnabled()
+    {
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(SteamRunKey, false);
+            return key?.GetValue(SteamRunValueName) != null;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    static void DisableSteamStartup(bool silent)
+    {
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(SteamRunKey, true);
+            if (key != null)
+            {
+                var steamValue = key.GetValue(SteamRunValueName);
+                if (steamValue != null)
+                {
+                    // Backup the Steam startup value
+                    string backupPath = Path.Combine(InstallFolder, BackupFileName);
+                    File.WriteAllText(backupPath, steamValue.ToString() ?? "");
+
+                    // Remove Steam from startup
+                    key.DeleteValue(SteamRunValueName, false);
+
+                    if (!silent)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.WriteLine("  • Disabled Steam's default startup");
+                        Console.ResetColor();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            if (!silent)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"  • Warning: Could not disable Steam startup: {ex.Message}");
+                Console.ResetColor();
+            }
+        }
+    }
+
+    static void RestoreSteamStartup(bool silent)
+    {
+        try
+        {
+            string backupPath = Path.Combine(InstallFolder, BackupFileName);
+            if (File.Exists(backupPath))
+            {
+                string steamStartupValue = File.ReadAllText(backupPath);
+                if (!string.IsNullOrEmpty(steamStartupValue))
+                {
+                    using var key = Registry.CurrentUser.OpenSubKey(SteamRunKey, true);
+                    key?.SetValue(SteamRunValueName, steamStartupValue);
+
+                    if (!silent)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.WriteLine("  • Restored Steam's default startup");
+                        Console.ResetColor();
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            if (!silent)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine($"  • Warning: Could not restore Steam startup: {ex.Message}");
+                Console.ResetColor();
+            }
+        }
     }
 
     static void Install(bool silent)
@@ -127,9 +221,19 @@ class Program
                 Directory.CreateDirectory(InstallFolder);
             }
 
+            // Disable Steam's default startup to prevent conflict
+            DisableSteamStartup(silent);
+
             // Write the PowerShell script
             string scriptPath = Path.Combine(InstallFolder, ScriptFileName);
             File.WriteAllText(scriptPath, GetStartupScript());
+
+            if (!silent)
+            {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("  • Created startup script");
+                Console.ResetColor();
+            }
 
             // Create shortcut in startup folder
             string shortcutPath = Path.Combine(StartupFolder, ShortcutName);
@@ -137,17 +241,16 @@ class Program
 
             if (!silent)
             {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine("  • Created startup shortcut");
+                Console.ResetColor();
+
+                Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("  ✓ Installation complete!");
                 Console.ResetColor();
                 Console.WriteLine();
-                Console.WriteLine($"  Script installed to:");
-                Console.WriteLine($"    {scriptPath}");
-                Console.WriteLine();
-                Console.WriteLine($"  Startup shortcut created at:");
-                Console.WriteLine($"    {shortcutPath}");
-                Console.WriteLine();
-                Console.WriteLine("  Steam will now launch in Big Picture mode on startup.");
+                Console.WriteLine("  Steam will launch in Big Picture mode on next login.");
                 Console.WriteLine();
                 Console.WriteLine("  Press any key to continue...");
                 Console.ReadKey();
@@ -184,26 +287,42 @@ class Program
                 Console.WriteLine();
             }
 
+            // Restore Steam's default startup before removing files
+            RestoreSteamStartup(silent);
+
             // Remove shortcut from startup folder
             string shortcutPath = Path.Combine(StartupFolder, ShortcutName);
             if (File.Exists(shortcutPath))
             {
                 File.Delete(shortcutPath);
+                if (!silent)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine("  • Removed startup shortcut");
+                    Console.ResetColor();
+                }
             }
 
             // Remove install directory
             if (Directory.Exists(InstallFolder))
             {
                 Directory.Delete(InstallFolder, recursive: true);
+                if (!silent)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    Console.WriteLine("  • Removed installed files");
+                    Console.ResetColor();
+                }
             }
 
             if (!silent)
             {
+                Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("  ✓ Uninstallation complete!");
                 Console.ResetColor();
                 Console.WriteLine();
-                Console.WriteLine("  Steam Big Picture will no longer start automatically.");
+                Console.WriteLine("  Steam's original startup settings have been restored.");
                 Console.WriteLine();
                 Console.WriteLine("  Press any key to continue...");
                 Console.ReadKey();
@@ -229,7 +348,6 @@ class Program
 
     static void CreateShortcut(string shortcutPath, string scriptPath)
     {
-        // Use PowerShell to create the shortcut (avoids COM interop complexity)
         string psCommand = $@"
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut('{shortcutPath}')
@@ -278,7 +396,6 @@ foreach ($path in $steamPaths) {
     }
 }
 
-# Steam not found in common locations
 $regPath = ""HKCU:\Software\Valve\Steam""
 if (Test-Path $regPath) {
     $steamDir = (Get-ItemProperty -Path $regPath -Name SteamPath -ErrorAction SilentlyContinue).SteamPath

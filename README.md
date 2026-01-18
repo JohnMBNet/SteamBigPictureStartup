@@ -1,91 +1,204 @@
-# Steam Big Picture Startup
+<div align="center">
 
-<p align="center">
-  <strong>Automatically launch Steam in Big Picture mode when Windows starts</strong>
-</p>
+# 🎮 Steam Big Picture Startup
 
-<p align="center">
-  <a href="#installation">Installation</a> •
-  <a href="#features">Features</a> •
-  <a href="#uninstallation">Uninstallation</a> •
-  <a href="#building-from-source">Build</a> •
-  <a href="#license">License</a>
-</p>
+### Launch Steam in Big Picture mode automatically when Windows starts
+
+[![Windows](https://img.shields.io/badge/Platform-Windows%2010%2F11-0078D6?style=for-the-badge&logo=windows)](https://www.microsoft.com/windows)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+[![Version](https://img.shields.io/badge/Version-1.2.0-blue?style=for-the-badge)]()
+
+<br>
+
+<img src="https://store.steampowered.com/public/shared/images/header/logo_steam.svg" width="200" alt="Steam Logo">
+
+<br>
+
+**Perfect for couch gaming setups, HTPCs, and Steam Machines**
+
+[Installation](#-installation) • [Features](#-features) • [How It Works](#-how-it-works) • [FAQ](#-faq) • [Building](#%EF%B8%8F-building-from-source)
 
 ---
 
-## Features
+</div>
 
-- **Automatic Launch** — Steam Big Picture mode starts when you log into Windows
-- **Smart Detection** — Finds Steam in common install locations and Windows Registry
-- **Silent Operation** — No console windows or pop-ups during startup
-- **Easy Setup** — One-click installer with GUI menu
-- **Portable** — Self-contained executable with no dependencies
+<br>
 
-## Requirements
+## ✨ Features
 
-- Windows 10 or Windows 11
-- Steam client installed
+<table>
+<tr>
+<td width="50%">
 
-## Installation
+### 🚀 Seamless Experience
+- **One-click installer** — Simple GUI setup
+- **Silent mode** — Scriptable installation
+- **Auto-detects Steam** — Works with any install location
+- **Clean uninstall** — Removes all traces
+
+</td>
+<td width="50%">
+
+### 🛡️ Smart & Safe
+- **Handles conflicts** — Disables Steam's default startup
+- **Backs up settings** — Restores on uninstall
+- **No admin required** — User-level installation
+- **Open source** — Fully transparent
+
+</td>
+</tr>
+</table>
+
+<br>
+
+## 📦 Installation
 
 ### Quick Start
 
-1. Navigate to the `install` folder
-2. Run **`SteamBigPictureSetup.exe`**
-3. Select **Install** from the menu
+<table>
+<tr>
+<td>
 
-That's it! Steam will launch in Big Picture mode on your next login.
+**1.** Navigate to the `install` folder
+
+**2.** Run **`SteamBigPictureSetup.exe`**
+
+**3.** Select **Install**
+
+**4.** Done! ✓
+
+</td>
+<td>
+
+```
+┌───────────────────────────────────────────────┐
+│     Steam Big Picture Startup Setup           │
+│                  v1.2.0                       │
+├───────────────────────────────────────────────┤
+│                                               │
+│  Status: NOT INSTALLED                        │
+│                                               │
+│  Select an option:                            │
+│                                               │
+│    [1] Install                                │
+│    [2] Uninstall                              │
+│    [3] Exit                                   │
+│                                               │
+│  Enter choice (1-3): _                        │
+└───────────────────────────────────────────────┘
+```
+
+</td>
+</tr>
+</table>
 
 ### Command Line
 
-```cmd
+```powershell
+# Silent install
 install\SteamBigPictureSetup.exe --install
+
+# Silent uninstall
+install\SteamBigPictureSetup.exe --uninstall
 ```
 
 ### Alternative: PowerShell Script
 
-If you prefer not to use the executable:
-
 ```powershell
+# Install
 .\setup.ps1
-```
 
-## Uninstallation
-
-### Using the Installer
-
-1. Run **`install\SteamBigPictureSetup.exe`**
-2. Select **Uninstall**
-
-### Command Line
-
-```cmd
-install\SteamBigPictureSetup.exe --uninstall
-```
-
-### PowerShell
-
-```powershell
+# Uninstall
 .\setup.ps1 -Uninstall
 ```
 
-## How It Works
+<br>
 
-The installer creates a small PowerShell script in your local app data folder and adds a shortcut to the Windows Startup folder. On login, the script silently launches Steam with the `-bigpicture` flag.
+## 🔧 How It Works
 
-**Install location:** `%LocalAppData%\SteamBigPictureStartup`
+```
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│   Windows       │────▶│   PowerShell     │────▶│     Steam       │
+│   Startup       │     │   Script         │     │   Big Picture   │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
+```
 
-**Steam detection paths:**
-- `C:\Program Files (x86)\Steam`
-- `C:\Program Files\Steam`
-- `D:\Steam`
-- `D:\Games\Steam`
-- Windows Registry (`HKCU:\Software\Valve\Steam`)
+1. **On Install:**
+   - Disables Steam's default startup (backed up for later)
+   - Creates a lightweight PowerShell script
+   - Adds a shortcut to Windows Startup folder
 
-## Building from Source
+2. **On Login:**
+   - Windows runs the startup shortcut
+   - Script launches Steam with `-bigpicture` flag
+   - Steam opens directly to Big Picture mode
 
-Requires [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+3. **On Uninstall:**
+   - Removes the startup shortcut and script
+   - Restores Steam's original startup setting
+
+<br>
+
+## 📍 Steam Detection
+
+The installer automatically finds Steam in these locations:
+
+| Priority | Location |
+|:--------:|----------|
+| 1 | `C:\Program Files (x86)\Steam` |
+| 2 | `C:\Program Files\Steam` |
+| 3 | `D:\Steam` |
+| 4 | `D:\Games\Steam` |
+| 5 | Windows Registry *(fallback)* |
+
+<br>
+
+## ❓ FAQ
+
+<details>
+<summary><b>What if Steam is already set to start automatically?</b></summary>
+<br>
+The installer automatically detects and disables Steam's default startup to prevent conflicts. Your original settings are backed up and restored when you uninstall.
+</details>
+
+<details>
+<summary><b>Does this require administrator privileges?</b></summary>
+<br>
+No! Everything is installed at the user level — no admin rights needed.
+</details>
+
+<details>
+<summary><b>Where are files installed?</b></summary>
+<br>
+
+| Component | Location |
+|-----------|----------|
+| Startup script | `%LocalAppData%\SteamBigPictureStartup` |
+| Startup shortcut | `%AppData%\Microsoft\Windows\Start Menu\Programs\Startup` |
+
+</details>
+
+<details>
+<summary><b>Steam isn't launching — what do I do?</b></summary>
+<br>
+
+1. Make sure Steam is installed in a standard location
+2. Check that Steam isn't already running
+3. Verify the shortcut exists in your Startup folder (`Win + R` → `shell:startup`)
+
+</details>
+
+<details>
+<summary><b>Can I use this on multiple user accounts?</b></summary>
+<br>
+Yes! Run the installer for each Windows user account that needs Big Picture mode on startup.
+</details>
+
+<br>
+
+## 🏗️ Building from Source
+
+**Requirements:** [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ```powershell
 .\build.ps1
@@ -93,36 +206,51 @@ Requires [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
 
 Output: `publish\SteamBigPictureSetup.exe`
 
-## Project Structure
+<br>
+
+## 📁 Project Structure
 
 ```
 SteamBigPictureStartup/
-├── install/
-│   └── SteamBigPictureSetup.exe    # Pre-built installer
-├── releases/
-│   └── *.md                        # Release notes
-├── SteamBigPictureInstaller/       # C# source code
-├── StartSteamBigPicture.ps1        # Standalone PowerShell script
-├── setup.ps1                       # PowerShell installer
-└── build.ps1                       # Build script
+│
+├── 📂 install/
+│   └── SteamBigPictureSetup.exe    ← Ready-to-use installer
+│
+├── 📂 releases/
+│   └── *.md                        ← Release notes
+│
+├── 📂 SteamBigPictureInstaller/
+│   ├── Program.cs                  ← Installer source
+│   └── *.csproj                    ← Project file
+│
+├── 📄 StartSteamBigPicture.ps1     ← Standalone script
+├── 📄 setup.ps1                    ← PowerShell installer
+├── 📄 build.ps1                    ← Build script
+├── 📄 CHANGELOG.md                 ← Version history
+├── 📄 LICENSE                      ← MIT License
+└── 📄 README.md                    ← You are here
 ```
 
-## Troubleshooting
+<br>
 
-**Steam doesn't launch?**
-- Ensure Steam is installed in a standard location
-- Check if Steam is already running
+## 📜 License
 
-**Execution policy error?**
-- The installer uses `-ExecutionPolicy Bypass` automatically
-- Or run: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
+<div align="center">
 
-## License
+**MIT License** — Free to use, modify, and distribute.
 
-[MIT License](LICENSE) — feel free to use, modify, and distribute.
+See [LICENSE](LICENSE) for details.
+
+<br>
 
 ---
 
-<p align="center">
-  Made for couch gaming enthusiasts
-</p>
+<br>
+
+Made with ☕ for couch gamers everywhere
+
+<br>
+
+**[⬆ Back to top](#-steam-big-picture-startup)**
+
+</div>
