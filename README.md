@@ -1,78 +1,128 @@
 # Steam Big Picture Startup
 
-A simple PowerShell utility that automatically launches Steam in Big Picture mode when Windows starts.
+<p align="center">
+  <strong>Automatically launch Steam in Big Picture mode when Windows starts</strong>
+</p>
+
+<p align="center">
+  <a href="#installation">Installation</a> •
+  <a href="#features">Features</a> •
+  <a href="#uninstallation">Uninstallation</a> •
+  <a href="#building-from-source">Build</a> •
+  <a href="#license">License</a>
+</p>
+
+---
 
 ## Features
 
-- Automatically starts Steam in Big Picture mode on Windows startup
-- Checks multiple common Steam installation paths
-- Silent execution (no console window flash)
-- Easy one-click setup
+- **Automatic Launch** — Steam Big Picture mode starts when you log into Windows
+- **Smart Detection** — Finds Steam in common install locations and Windows Registry
+- **Silent Operation** — No console windows or pop-ups during startup
+- **Easy Setup** — One-click installer with GUI menu
+- **Portable** — Self-contained executable with no dependencies
 
 ## Requirements
 
-- Windows 10/11
-- PowerShell 5.1 or later
-- Steam installed in a standard location
+- Windows 10 or Windows 11
+- Steam client installed
 
 ## Installation
 
-### Automatic Setup (Recommended)
+### Quick Start
 
-1. Open PowerShell as Administrator
-2. Navigate to the project directory:
-   ```powershell
-   cd "D:\Development\SteamBigPictureStartup"
-   ```
-3. Run the setup script:
-   ```powershell
-   .\setup.ps1
-   ```
+1. Navigate to the `install` folder
+2. Run **`SteamBigPictureSetup.exe`**
+3. Select **Install** from the menu
 
-The setup script will create a shortcut in your Windows Startup folder that launches Steam Big Picture mode silently on login.
+That's it! Steam will launch in Big Picture mode on your next login.
 
-### Manual Setup
+### Command Line
 
-1. Press `Win + R` and type `shell:startup` to open the Startup folder
-2. Create a new shortcut with the following target:
-   ```
-   powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -File "D:\Development\SteamBigPictureStartup\StartSteamBigPicture.ps1"
-   ```
-3. Name the shortcut "Steam Big Picture"
+```cmd
+install\SteamBigPictureSetup.exe --install
+```
+
+### Alternative: PowerShell Script
+
+If you prefer not to use the executable:
+
+```powershell
+.\setup.ps1
+```
 
 ## Uninstallation
 
-### Automatic
+### Using the Installer
 
-Run the setup script with the `-Uninstall` flag:
+1. Run **`install\SteamBigPictureSetup.exe`**
+2. Select **Uninstall**
+
+### Command Line
+
+```cmd
+install\SteamBigPictureSetup.exe --uninstall
+```
+
+### PowerShell
+
 ```powershell
 .\setup.ps1 -Uninstall
 ```
 
-### Manual
+## How It Works
 
-1. Press `Win + R` and type `shell:startup`
-2. Delete the "Steam Big Picture" shortcut
+The installer creates a small PowerShell script in your local app data folder and adds a shortcut to the Windows Startup folder. On login, the script silently launches Steam with the `-bigpicture` flag.
 
-## Files
+**Install location:** `%LocalAppData%\SteamBigPictureStartup`
 
-| File | Description |
-|------|-------------|
-| `StartSteamBigPicture.ps1` | Main script that launches Steam Big Picture |
-| `setup.ps1` | Installation/uninstallation utility |
-| `README.md` | This documentation file |
-| `releasev1.md` | Release notes for version 1.0 |
+**Steam detection paths:**
+- `C:\Program Files (x86)\Steam`
+- `C:\Program Files\Steam`
+- `D:\Steam`
+- `D:\Games\Steam`
+- Windows Registry (`HKCU:\Software\Valve\Steam`)
+
+## Building from Source
+
+Requires [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+
+```powershell
+.\build.ps1
+```
+
+Output: `publish\SteamBigPictureSetup.exe`
+
+## Project Structure
+
+```
+SteamBigPictureStartup/
+├── install/
+│   └── SteamBigPictureSetup.exe    # Pre-built installer
+├── releases/
+│   └── *.md                        # Release notes
+├── SteamBigPictureInstaller/       # C# source code
+├── StartSteamBigPicture.ps1        # Standalone PowerShell script
+├── setup.ps1                       # PowerShell installer
+└── build.ps1                       # Build script
+```
 
 ## Troubleshooting
 
-**Steam not launching:**
-- Verify Steam is installed at `C:\Program Files (x86)\Steam\steam.exe`
-- If Steam is installed elsewhere, edit `StartSteamBigPicture.ps1` and update the `$steamPath` variable
+**Steam doesn't launch?**
+- Ensure Steam is installed in a standard location
+- Check if Steam is already running
 
-**PowerShell execution policy error:**
-- The setup script uses `-ExecutionPolicy Bypass` to avoid this issue
-- Alternatively, run `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser` in an elevated PowerShell
+**Execution policy error?**
+- The installer uses `-ExecutionPolicy Bypass` automatically
+- Or run: `Set-ExecutionPolicy RemoteSigned -Scope CurrentUser`
 
 ## License
 
-MIT License - Feel free to use and modify as needed.
+[MIT License](LICENSE) — feel free to use, modify, and distribute.
+
+---
+
+<p align="center">
+  Made for couch gaming enthusiasts
+</p>

@@ -1,5 +1,25 @@
-# Steam Big Picture Startup - Setup Script
-# Creates or removes a startup shortcut for Steam Big Picture mode
+<#
+.SYNOPSIS
+    Installs or uninstalls Steam Big Picture Startup.
+
+.DESCRIPTION
+    Creates or removes a startup shortcut that launches Steam in Big Picture mode on login.
+
+.PARAMETER Uninstall
+    Remove the startup shortcut.
+
+.EXAMPLE
+    .\setup.ps1
+    Installs the startup shortcut.
+
+.EXAMPLE
+    .\setup.ps1 -Uninstall
+    Removes the startup shortcut.
+
+.NOTES
+    Author: JohnMBNet
+    License: MIT
+#>
 
 param(
     [switch]$Uninstall
@@ -11,21 +31,19 @@ $shortcutPath = Join-Path $startupFolder $shortcutName
 $scriptPath = Join-Path $PSScriptRoot "StartSteamBigPicture.ps1"
 
 if ($Uninstall) {
-    # Remove the shortcut
     if (Test-Path $shortcutPath) {
         Remove-Item $shortcutPath -Force
-        Write-Host "Uninstalled successfully. Steam Big Picture will no longer start automatically." -ForegroundColor Green
+        Write-Host "Uninstalled successfully." -ForegroundColor Green
+        Write-Host "Steam Big Picture will no longer start automatically."
     } else {
-        Write-Host "Shortcut not found. Nothing to uninstall." -ForegroundColor Yellow
+        Write-Host "Not installed. Nothing to remove." -ForegroundColor Yellow
     }
 } else {
-    # Verify the main script exists
     if (-not (Test-Path $scriptPath)) {
-        Write-Error "StartSteamBigPicture.ps1 not found in the current directory."
+        Write-Error "StartSteamBigPicture.ps1 not found."
         exit 1
     }
 
-    # Create the shortcut
     $WshShell = New-Object -ComObject WScript.Shell
     $shortcut = $WshShell.CreateShortcut($shortcutPath)
     $shortcut.TargetPath = "powershell.exe"
@@ -34,12 +52,12 @@ if ($Uninstall) {
     $shortcut.Description = "Launch Steam in Big Picture mode"
     $shortcut.Save()
 
-    Write-Host "Setup complete!" -ForegroundColor Green
+    Write-Host "Installed successfully!" -ForegroundColor Green
     Write-Host ""
-    Write-Host "A shortcut has been created at:" -ForegroundColor Cyan
-    Write-Host "  $shortcutPath" -ForegroundColor White
+    Write-Host "Shortcut created at:" -ForegroundColor Cyan
+    Write-Host "  $shortcutPath"
     Write-Host ""
-    Write-Host "Steam will now launch in Big Picture mode when you log in." -ForegroundColor Cyan
+    Write-Host "Steam will launch in Big Picture mode on next login."
     Write-Host ""
-    Write-Host "To uninstall, run: .\setup.ps1 -Uninstall" -ForegroundColor Gray
+    Write-Host "To uninstall: .\setup.ps1 -Uninstall" -ForegroundColor DarkGray
 }
